@@ -7,7 +7,6 @@ public class PlayerMovement : MonoBehaviour
     private float horizontal;
     public float speed = 8f;
     public float jumpingPower = 16f;
-   // public float holdJumpPower = 0.3f;
     private bool isFacingRight = true;
 
     private Rigidbody2D rb;
@@ -17,41 +16,60 @@ public class PlayerMovement : MonoBehaviour
     private float coyoteTime = 0.1f;
     private float coyoteTimeCounter;
 
-    // Start is called before the first frame update
+    private Animator animator;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         horizontal = Input.GetAxis("Horizontal");
         rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
 
-        if(isGrounded())//jump buffering
+        if (isGrounded())
         {
             coyoteTimeCounter = coyoteTime;
+
+            if (animator != null)
+            {
+                animator.SetBool("isJumping", false);
+                animator.SetBool("isRunning", horizontal != 0);
+            }
         }
         else
         {
             coyoteTimeCounter -= Time.deltaTime;
+
+            if (animator != null)
+            {
+                animator.SetBool("isJumping", true);
+                animator.SetBool("isRunning", false);
+            }
         }
 
         if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.Space)) && coyoteTimeCounter > 0f)
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
             coyoteTimeCounter = 0f;
-        }
-        /*
-        else if ((Input.GetKeyUp(KeyCode.W) || Input.GetKeyUp(KeyCode.Space)) && rb.velocity.y > 0f)
-        {
-            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * holdJumpPower);
-        }
-        */
-            Flip();
-    }
 
+            if (animator != null)
+            {
+                animator.SetBool("isJumping", true); // Setează imediat la săritură
+                animator.SetBool("isRunning", false);
+                animator.SetBool("isIdle", false);
+            }
+        }
+
+        if (animator != null)
+        {
+            animator.SetBool("isIdle", isGrounded() && horizontal == 0);
+        }
+
+        Flip();
+    }
 
     private bool isGrounded()
     {
@@ -67,8 +85,5 @@ public class PlayerMovement : MonoBehaviour
             localScale.x *= -1;
             transform.localScale = localScale;
         }
-        
-
     }
-
 }
