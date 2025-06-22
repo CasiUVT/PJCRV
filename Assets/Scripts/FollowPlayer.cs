@@ -1,12 +1,20 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class FollowPlayer : MonoBehaviour
 {
     public Transform Player;
+    private bool shouldFollow = true;
+
+    public void SetFollowing(bool follow)
+    {
+        shouldFollow = follow;
+    }
+
     void Update()
     {
-        transform.position = Player.position;
+        if (shouldFollow)
+        {
+            transform.position = Player.position;
+        }
     }
 }

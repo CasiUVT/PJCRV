@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -32,7 +30,7 @@ public class Arrow : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            HandlePlayerDeath(collision.transform.position);
         }
         else
         {
@@ -44,11 +42,24 @@ public class Arrow : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            HandlePlayerDeath(other.transform.position);
         }
         else
         {
             Destroy(gameObject);
+        }
+    }
+
+    private void HandlePlayerDeath(Vector3 deathPosition)
+    {
+        PlayerDeathHandler handler = PlayerDeathHandler.Instance;
+        if (handler != null)
+        {
+            handler.Die(deathPosition, false);
+        }
+        else
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
     }
 }
