@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class Spikes : MonoBehaviour
 {
@@ -9,7 +6,7 @@ public class Spikes : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            HandlePlayerDeath(collision.transform.position);
         }
     }
 
@@ -17,7 +14,22 @@ public class Spikes : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            HandlePlayerDeath(other.transform.position);
+        }
+    }
+
+    private void HandlePlayerDeath(Vector3 deathPosition)
+    {
+        PlayerDeathHandler handler = PlayerDeathHandler.Instance;
+        if (handler != null)
+        {
+            handler.Die(deathPosition, true);
+        }
+        else
+        {
+            // Fallback for levels without handler
+            UnityEngine.SceneManagement.SceneManager.LoadScene(
+                UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex);
         }
     }
 }
